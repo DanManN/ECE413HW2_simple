@@ -10,6 +10,7 @@
 close all
 clear functions
 clear variables
+clc
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Constants
@@ -19,6 +20,7 @@ constants.durationScale=.5;             % Duration of notes in a scale
 constants.durationChord=4;              % Duration of chords
 STDOUT=1;                               % Define the standard output stream
 STDERR=2;                               % Define the standard error stream
+[~, constants.notes] = note2freq('A4'); % Initialize notes table
 
 notes{1}.note='C4';
 notes{1}.start=0;
@@ -44,28 +46,30 @@ instrument.mode = 'Major';
 synthTypes={'Additive','Subtractive','FM','Waveshaper'};
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Questions 1--4 - samples
+%% Questions 1--4 - samples
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 for cntSynth=1:length(synthTypes)
     instrument.sound=synthTypes{cntSynth};
-    [soundSample]=create_sound(instrument,notes{1}, constants);
+    [soundSample]=create_sound(instrument,{notes{1}}, constants);
     
     fprintf(STDOUT,'For the %s synthesis type...\n',synthTypes{cntSynth})
     
     fprintf(STDOUT,'Playing the Sample Note');
     soundsc(soundSample,constants.fs);
+    pause(instrument.totalTime/constants.fs);
     fprintf('\n');
     
 end % for cntSynth;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Question 5  - chords
+%% Question 5  - chords
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 for cntSynth=1:length(synthTypes)
     % major chords
     instrument.mode = 'Major';
     instrument.sound=synthTypes{cntSynth};
+    instrument.temperament='Just';
     [soundMajorChordJust]=create_sound(instrument,notes,constants);
     instrument.temperament='Equal';
     [soundMajorChordEqual]=create_sound(instrument,notes,constants);
