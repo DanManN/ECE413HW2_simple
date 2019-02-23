@@ -55,7 +55,8 @@ for cntSynth=1:1%length(synthTypes)
     fprintf(STDOUT,'For the %s synthesis type...\n',synthTypes{cntSynth})
     
     fprintf(STDOUT,'Playing the Sample Note');
-    audiowrite('temp.wav',soundSample/max(soundSample),constants.fs)
+    x = soundSample./(max(abs(soundSample))+0.01);
+    audiowrite('temp.wav',x,constants.fs)
     %soundsc(soundSample,constants.fs);
     pause(instrument.totalTime/constants.fs);
     fprintf('\n');
