@@ -21,7 +21,7 @@ switch instrument.sound
                tone(m,1:dur) = (1:dur)/constants.fs;
                tone(m,:) = freq*tone(m,:).*real(FRQ(m))+imag(FRQ(m));
                tone(m,:) = AMP(m)*sin(2*pi*tone(m,:));
-               tone(m,dur-length(decay)+1:dur) = tone(m,dur-length(decay)+1:dur).*decay;
+               %tone(m,dur-length(decay)+1:dur) = tone(m,dur-length(decay)+1:dur).*decay;
            end
            narray(n,1+note.start:note.duration) = sum(tone);
         end
