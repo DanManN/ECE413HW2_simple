@@ -3,6 +3,8 @@ function [sound] = create_sound(instrument,notes,constants)
 %   Creates a sound waveform of a specified note(s) 
 %   based on instrument/time specifications
 
+decay = 10.^(0:-0.1:-1000);
+
 switch instrument.sound
     case {'Additive'}
         AMP = [1, 0.67, 1, 1.8, 2.76, 1.67, 1.46, 1.33, 1.33, 1, 1.33]';
@@ -12,15 +14,16 @@ switch instrument.sound
         narray = zeros(length(notes),instrument.totalTime);
         for n = 1:length(notes)
            note = notes{n};
+           freq = note2freq(note.note,constants.notes);
            tone = zeros(11,note.duration);
            for m = 1:11
                dur = note.duration*DUR(m)
                tone(m,1:dur) = (1:dur)/constants.fs;
+               tone(m,:) = freq*tone(m,:).*real(FRQ(m))+imag(FRQ(m));
+               tone(m,:) = AMP(m)*sin(2*pi*tone(m,:));
+               tone(m,dur-length(decay)+1:dur) = tone(m,dur-length(decay)+1:dur).*decay;
            end
-           note2freq(note.note,constants.notes);
-           tone = note2freq(note.note,constants.notes)*tone.*real(FRQ)+imag(FRQ);
-           tone = sum(AMP.*sin(2*pi*tone));
-           narray(n,1+note.start:note.duration) = tone;
+           narray(n,1+note.start:note.duration) = sum(tone);
         end
         sound = sum(narray,1);
     
