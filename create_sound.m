@@ -14,7 +14,7 @@ switch instrument.sound
            note = notes{n};
            tone = zeros(11,note.duration);
            for m = 1:11
-               dur = floor(note.duration*DUR(m));
+               dur = note.duration*DUR(m)
                tone(m,1:dur) = (1:dur)/constants.fs;
            end
            note2freq(note.note,constants.notes);
