@@ -11,10 +11,14 @@ function [freq,Notes] = note2freq(note,Notes)
 %
 % INPUTS
 %   note = The note expressed as a letter followed by a number
+%          (interpreted in equal temperament)
+%            or
+%          Cell array of two such notes, [note,root]
+%          (interpreted as just temperament)
 %   Notes (optional) = The lookup table of notes to frequency to use
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%   Inputs (expressed as a letter followed by a number
+%   Inputs expressed as a letter followed by a number
 %       where A4 = 440 (the A above middle C)
 %       See http://en.wikipedia.org/wiki/Piano_key_frequencies for note
 %       numbers and frequencies
@@ -177,11 +181,26 @@ function [freq,Notes] = note2freq(note,Notes)
         };
         Notes = cell2table(table(:,2),'RowNames',table(:,1),'VariableNames',{'Hz'});
     end
-        
-    try 
-        freq = Notes(note,1).Hz;
-    catch ME
-        freq = 440;
+    
+    if class(note) == 'cell'
+        try
+            %justrat = [16/15 10/9 9/8 6/5 5/4 4/3 45/32 64/45 3/2 8/5 5/3 7/4 16/9 9/5 15/8 2];
+            justrat = [2 3/2 4/3 5/3 5/4 7/4 6/5 8/5 9/5 9/8 15/8 10/9 16/9 16/15 45/32 64/45];
+            [~,ind] = min(abs(justrat-Notes(note(1),1).Hz/Notes(note(2),1).Hz));
+            freq = Notes(note(2),1).Hz*justrat(ind);
+        catch ME
+            try 
+                freq = Notes(note(1),1).Hz;
+            catch ME
+                freq = 440;
+            end
+        end
+    else
+        try 
+            freq = Notes(note,1).Hz;
+        catch ME
+            freq = 440;
+        end
     end
 end
 
