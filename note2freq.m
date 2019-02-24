@@ -13,7 +13,7 @@ function [freq,Notes] = note2freq(note,Notes)
 %   note = The note expressed as a letter followed by a number
 %          (interpreted in equal temperament)
 %            or
-%          Cell array of two such notes, [note,root]
+%          Cell array of two such notes and scale type, [note,root,scale]
 %          (interpreted as just temperament)
 %   Notes (optional) = The lookup table of notes to frequency to use
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -184,13 +184,24 @@ function [freq,Notes] = note2freq(note,Notes)
     
     if class(note) == 'cell'
         try
-            %justrat = [16/15 10/9 9/8 6/5 5/4 4/3 45/32 64/45 3/2 8/5 5/3 7/4 16/9 9/5 15/8 2];
-            justrat = [2 3/2 4/3 5/3 5/4 7/4 6/5 8/5 9/5 9/8 15/8 10/9 16/9 16/15 45/32 64/45];
-            [~,ind] = min(abs(justrat-Notes(note(1),1).Hz/Notes(note(2),1).Hz));
-            freq = Notes(note(2),1).Hz*justrat(ind);
+            if class(note{3}) == 'char'
+                justrat = [16/15 10/9 9/8 6/5 5/4 4/3 45/32 64/45 3/2 8/5 5/3 7/4 16/9 9/5 15/8 2];
+                switch note{3}
+                    case {'Major','major','M','Maj','maj'}
+                        scale = [1 cumprod(justrat([3 2 1 3 2 3 1]),2)];
+                    case {'Minor','minor','m','Min','min'}
+                        scale = [1 cumprod(justrat([3 1 2 3 1 3 2]),2)];
+                    otherwise
+                        scale = justrat;
+                end
+            else
+                scale = note{3};
+            end
+            [~,ind] = min(abs(scale-Notes(note{1},1).Hz/Notes(note{2},1).Hz));
+            freq = Notes(note{2},1).Hz*scale(ind);
         catch ME
             try 
-                freq = Notes(note(1),1).Hz;
+                freq = Notes(note{1},1).Hz;
             catch ME
                 freq = 440;
             end

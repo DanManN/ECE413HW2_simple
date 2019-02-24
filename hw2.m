@@ -48,7 +48,7 @@ synthTypes={'Additive','Subtractive','FM','Waveshaper'};
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Questions 1--4 - samples
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-for cntSynth=4:length(synthTypes)
+for cntSynth=1:length(synthTypes)
     instrument.sound=synthTypes{cntSynth};
     [soundSample]=create_sound(instrument, notes{1}, constants);
     
@@ -67,7 +67,7 @@ end % for cntSynth;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Question 5  - chords
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-for cntSynth=4:length(synthTypes)
+for cntSynth=1:length(synthTypes)
     % major chords
     instrument.mode = 'Major';
     instrument.sound=synthTypes{cntSynth};

@@ -8,13 +8,16 @@ if length(notes) == 1
 end
 
 root = '';
+scale = '';
 if startsWith(instrument.temperament,'Just')
     root = notes{1}.note;
+    scale = instrument.mode;
 end
 
 narray = zeros(length(notes),instrument.totalTime);
 
 switch instrument.sound
+    
     case {'Additive'}
         
         % Bell, fade out
@@ -23,10 +26,10 @@ switch instrument.sound
         FRQ = [0.56, 0.56 + i, 0.92, 0.92 + 1.7i, 1.19, 1.7, 2, 2.74, 3, 3.76, 4.07].';
         for n = 1:length(notes)
            note = notes{n};
-           freq = note2freq({note.note,root},constants.notes);
+           freq = note2freq({note.note,root,scale},constants.notes);
            tone = zeros(11,note.duration);
            for m = 1:11
-               dur = note.duration*DUR(m);
+               dur = floor(note.duration*DUR(m));
                decay = linspace(1,0,dur/2);
                tone(m,1:dur) = (1:dur)/constants.fs;
                tone(m,:) = freq*tone(m,:).*real(FRQ(m))+imag(FRQ(m));
@@ -52,7 +55,7 @@ switch instrument.sound
                 );
         for n = 1:length(notes)
             note = notes{n};
-            center = note2freq({note.note,root},constants.notes);
+            center = note2freq({note.note,root,scale},constants.notes);
             dur = note.duration;
             fadein = linspace(0,1,dur/2);
             tone = zeros(1,dur);
@@ -74,7 +77,7 @@ switch instrument.sound
         IMAX = 1/2;
         for n = 1:length(notes)
             note = notes{n};
-            fc = note2freq({note.note,root},constants.notes);
+            fc = note2freq({note.note,root,scale},constants.notes);
             fm = fc/fc_fm;
             dur = note.duration;
             t = (1:dur)/constants.fs;
@@ -91,12 +94,12 @@ switch instrument.sound
     case {'Waveshaper'}
         
         % Clarinet
-        Fx=@(x) ((x<=200).*x/400 - 1)...
-              + ((x>200&x<311).*x/112 - 16/7)...
-              + ((x>=311).*x/400 - 111/400);
+        Fx=@(x) (x<=200).*(x/400 - 1)...
+              + (x>200&x<311).*(x/112 - 16/7)...
+              + (x>=311).*(x/400 - 111/400);
         for n = 1:length(notes)
             note = notes{n};
-            freq = note2freq({note.note,root},constants.notes);
+            freq = note2freq({note.note,root,scale},constants.notes);
             dur = note.duration;
             t = (1:dur)/constants.fs;
             env = 255*[linspace(0,1,floor(dur*0.002)),...
@@ -107,6 +110,18 @@ switch instrument.sound
             tone = env.*cos(2*pi*freq*t)+256;
             narray(n,1+note.start:dur) = Fx(tone);
         end
+        
+    otherwise
+        
+        %Pure
+         for n = 1:length(notes)
+            note = notes{n};
+            freq = note2freq({note.note,root,scale},constants.notes);
+            dur = note.duration;
+            t = (1:dur)/constants.fs;
+            narray(n,1+note.start:dur) = cos(2*pi*freq*t);
+         end
+        
 end
 
 sound = sum(narray,1);
