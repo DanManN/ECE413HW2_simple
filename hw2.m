@@ -5,7 +5,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Setup
+% Setup
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 close all
 clear functions
@@ -48,16 +48,16 @@ synthTypes={'Additive','Subtractive','FM','Waveshaper'};
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Questions 1--4 - samples
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-for cntSynth=1:1%length(synthTypes)
-    instrument.sound=synthTypes{cntSynth};
-    [soundSample]=create_sound(instrument,{notes{1}}, constants);
+for cntSynth=1:3%length(synthTypes)
+    instrument.sound=synthTypes{3};%cntSynth};
+    [soundSample]=create_sound(instrument,{notes{cntSynth}}, constants);
     
     fprintf(STDOUT,'For the %s synthesis type...\n',synthTypes{cntSynth})
     
     fprintf(STDOUT,'Playing the Sample Note');
-    x = soundSample./(max(abs(soundSample))+0.01);
-    audiowrite('temp.wav',x,constants.fs)
-    %soundsc(soundSample,constants.fs);
+    %x = soundSample./(max(abs(soundSample))+0.01);
+    %audiowrite('temp.wav',x,constants.fs)
+    soundsc(soundSample,constants.fs);
     pause(instrument.totalTime/constants.fs);
     fprintf('\n');
     
